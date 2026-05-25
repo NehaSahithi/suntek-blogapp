@@ -5,7 +5,7 @@ import axios from "axios";
 
 import FormInput from "./ui/FormInput";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "https://blog-app-fwx1.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://suntek-blogapp-4iwp.onrender.com";
 
 export default function Register() {
   const navigate = useNavigate();
