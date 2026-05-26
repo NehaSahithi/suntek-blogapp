@@ -71,19 +71,19 @@ export default function Home() {
             {!error &&
               articles.map((article, index) => (
                 <div
-                  key={article._id || `${article.title}-${index}`}
+                  key={article._id || article.id || `${article.title}-${index}`}
                   className="opacity-0 animate-fade-up"
                   style={{ animationDelay: `${index * 75}ms` }}
                 >
                   <ArticleCard
                     title={article.title}
                     authorName={
-                      article.author?.firstName || article.authorName || "Unknown"
+                      (article.author && article.author.firstName) || article.authorName || "Unknown"
                     }
                     category={article.category}
                     excerpt={(article.content || "").substring(0, 120) + (article.content?.length > 120 ? "..." : "")}
-                    date={article.createdAt}
-                    href={`/article/${article._id}`}
+                    date={article.createdAt || article.date}
+                    href={`/article/${article._id || article.id}`}
                   />
                 </div>
               ))}

@@ -16,6 +16,14 @@ async function fetchArticles() {
     }
   }
 
+  // If remote endpoints failed, fall back to any locally-published articles
+  try {
+    const local = JSON.parse(localStorage.getItem("local_articles") || "[]");
+    if (Array.isArray(local) && local.length > 0) return local;
+  } catch (e) {
+    // ignore parse errors
+  }
+
   throw lastError || new Error("Failed to load articles");
 }
 

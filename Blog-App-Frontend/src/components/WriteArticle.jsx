@@ -1,5 +1,9 @@
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_API_URL || "https://suntek-blogapp-4iwp.onrender.com";
 
 export default function WriteArticle() {
   const { register, handleSubmit, reset } = useForm({
@@ -9,10 +13,30 @@ export default function WriteArticle() {
       content: "",
     },
   });
+  const navigate = useNavigate();
 
-  const onSubmit = async (values) => {
+  const onSaveDraft = async (values) => {
     toast.success(`Draft saved: ${values.title || "Untitled article"}`);
     reset();
+  };
+
+  const onPublish = async (values) => {
+    const payload = {
+      title: values.title || "Untitled article",
+      category: values.category || "Engineering",
+      content: values.content || "",
+    };
+
+    // Post to backend API (requires running backend + Mongo cluster).
+    try {
+      await axios.post(`${BASE_URL}/author-api/articles`, payload, { withCredentials: true });
+      toast.success(`Published: ${payload.title}`);
+      reset();
+      navigate("/");
+    } catch (err) {
+      const msg = err?.response?.data?.message || err.message || "Publish failed";
+      toast.error(`Publish failed: ${msg}`);
+    }
   };
 
   return (
@@ -23,7 +47,7 @@ export default function WriteArticle() {
           This editor is a polished frontend shell you can wire to your publish API next.
         </p>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mt-6 space-y-4">
           <div>
             <label className="text-sm font-medium text-slate-700">Title</label>
             <input
@@ -46,9 +70,22 @@ export default function WriteArticle() {
               {...register("content", { required: true })}
             />
           </div>
-          <button className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-            Save draft
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleSubmit(onSaveDraft)}
+              className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              Save draft
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit(onPublish)}
+              className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Publish
+            </button>
+          </div>
         </form>
       </section>
 

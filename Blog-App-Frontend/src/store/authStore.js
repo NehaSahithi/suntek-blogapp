@@ -106,6 +106,7 @@ export const useAuth = create((set) => ({
         error: null,
       });
     } catch (err) {
+      // On failure, clear stored user and mark unauthenticated.
       localStorage.removeItem("currentUser");
 
       set({
